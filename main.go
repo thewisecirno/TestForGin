@@ -38,6 +38,12 @@ func main() {
 	route.POST("/test", server.ServerPOST4)
 	route.POST("/getFiles", server.ServerPOST5)
 
+	//NoRoute
+	route.NoRoute(func(c *gin.Context) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"msg": "找不到界面了",
+		})
+	})
 	//RUN
 	err := route.Run(":9090")
 	if err != nil {
