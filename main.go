@@ -7,7 +7,13 @@ import (
 	"net/http"
 )
 
+// gin.Default()
+// 默认是使用了Logger和Recovery中间件，其中：
+// Logger中间件将日志写入了gin.DefaultWriter，即配置了GIN_MODE=release
+// Recovery中间件会recover任何的panic，如果有panic的话就会写入500响应码
 var route = gin.Default()
+
+// 可以使用 var route = gin.New() 生成一个空的路由（不含任何中间件）
 
 func main() {
 
@@ -67,6 +73,28 @@ func main() {
 
 	//Test Middleware
 	route.GET("/middleware", server.MiddlewareTest, server.TestServer)
+	//亦可直接全局注册中间件,后续的所有请求都会自动执行该中间件
+	//route.Use(server.MiddlewareTest)
+
+	//路由组注册中间件,1
+	TestGroup1 := route.Group("/testGroup1", server.AuthMiddleware(true))
+	{
+		TestGroup1.GET("/page1", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"msg": "page1",
+			})
+		})
+	}
+	//路由组注册中间件,2
+	TestGroup2 := route.Group("/testGroup2")
+	TestGroup2.Use(server.AuthMiddleware(true))
+	{
+		TestGroup2.GET("/page1", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"msg": "page1",
+			})
+		})
+	}
 
 	//RUN
 	err := route.Run(":9090")
