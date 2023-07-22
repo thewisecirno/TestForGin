@@ -44,9 +44,34 @@ func main() {
 			"msg": "找不到界面了",
 		})
 	})
+
+	//Route Group
+	TestGroup := route.Group("/testGroup")
+	{
+		TestGroup.GET("/page1", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"msg": "page1",
+			})
+		})
+		TestGroup.GET("/page2", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"msg": "page2",
+			})
+		})
+		TestGroup.GET("/page3", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"msg": "page3",
+			})
+		})
+	}
+
+	//Test Middleware
+	route.GET("/middleware", server.MiddlewareTest, server.TestServer)
+
 	//RUN
 	err := route.Run(":9090")
 	if err != nil {
 		log.Fatal(err)
 	}
+
 }
